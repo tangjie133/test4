@@ -167,13 +167,13 @@ void DFRobotDFPlayerMini::parseStack(){
       handleMessage(DFPlayerPlayFinished, _handleParameter);
       break;
     case 0x3F:
-      if (_handleParameter & 0x01) {
+      if (_handleParameter == 0x01) {
         handleMessage(DFPlayerUSBOnline, _handleParameter);
       }
-      else if (_handleParameter & 0x02) {
+      else if (_handleParameter == 0x02) {
         handleMessage(DFPlayerCardOnline, _handleParameter);
       }
-      else if (_handleParameter & 0x03) {
+      else if (_handleParameter == 0x03) {
         handleMessage(DFPlayerCardUSBOnline, _handleParameter);
       }
       break;
