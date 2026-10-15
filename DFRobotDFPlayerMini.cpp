@@ -230,6 +230,9 @@ bool DFRobotDFPlayerMini::validateStack(){
 }
 
 bool DFRobotDFPlayerMini::available(){
+  if (_isSending && (millis()-_timeOutTimer>=_timeOutDuration)) {
+    return handleError(TimeOut);
+  }
   while (_serial->available()) {
     delay(1);
     if (_receivedIndex == 0) {
