@@ -285,6 +285,18 @@ bool DFRobotDFPlayerMini::available(){
   return _isAvailable;
 }
 
+int DFRobotDFPlayerMini::readFeedback(uint8_t command, uint16_t argument){
+  sendStack(command, argument);
+  while (waitAvailable()) {
+    if (readType() == DFPlayerFeedBack) {
+      return read();
+    }
+    // A non-feedback message (e.g. a leftover DFPlayerPlayFinished) was
+    // received; discard it and keep waiting for the real feedback.
+  }
+  return -1;
+}
+
 void DFRobotDFPlayerMini::next(){
   sendStack(0x01);
 }
@@ -399,128 +411,51 @@ void DFRobotDFPlayerMini::disableDAC(){
 }
 
 int DFRobotDFPlayerMini::readState(){
-  sendStack(0x42);
-  if (waitAvailable()) {
-    if (readType() == DFPlayerFeedBack) {
-      return read();
-    }
-    else{
-      return -1;
-    }
-  }
-  else{
-    return -1;
-  }
+  return readFeedback(0x42, 0);
 }
 
 int DFRobotDFPlayerMini::readVolume(){
-  sendStack(0x43);
-  if (waitAvailable()) {
-    return read();
-  }
-  else{
-    return -1;
-  }
+  return readFeedback(0x43, 0);
 }
 
 int DFRobotDFPlayerMini::readEQ(){
-  sendStack(0x44);
-  if (waitAvailable()) {
-    if (readType() == DFPlayerFeedBack) {
-      return read();
-    }
-    else{
-      return -1;
-    }
-  }
-  else{
-    return -1;
-  }
+  return readFeedback(0x44, 0);
 }
 
 int DFRobotDFPlayerMini::readFileCounts(uint8_t device){
   switch (device) {
     case DFPLAYER_DEVICE_U_DISK:
-      sendStack(0x47);
-      break;
+      return readFeedback(0x47, 0);
     case DFPLAYER_DEVICE_SD:
-      sendStack(0x48);
-      break;
+      return readFeedback(0x48, 0);
     case DFPLAYER_DEVICE_FLASH:
-      sendStack(0x49);
-      break;
+      return readFeedback(0x49, 0);
     default:
       break;
   }
-  
-  if (waitAvailable()) {
-    if (readType() == DFPlayerFeedBack) {
-      return read();
-    }
-    else{
-      return -1;
-    }
-  }
-  else{
-    return -1;
-  }
+  return -1;
 }
 
 int DFRobotDFPlayerMini::readCurrentFileNumber(uint8_t device){
   switch (device) {
     case DFPLAYER_DEVICE_U_DISK:
-      sendStack(0x4B);
-      break;
+      return readFeedback(0x4B, 0);
     case DFPLAYER_DEVICE_SD:
-      sendStack(0x4C);
-      break;
+      return readFeedback(0x4C, 0);
     case DFPLAYER_DEVICE_FLASH:
-      sendStack(0x4D);
-      break;
+      return readFeedback(0x4D, 0);
     default:
       break;
   }
-  if (waitAvailable()) {
-    if (readType() == DFPlayerFeedBack) {
-      return read();
-    }
-    else{
-      return -1;
-    }
-  }
-  else{
-    return -1;
-  }
+  return -1;
 }
 
 int DFRobotDFPlayerMini::readFileCountsInFolder(int folderNumber){
-  sendStack(0x4E, folderNumber);
-  if (waitAvailable()) {
-    if (readType() == DFPlayerFeedBack) {
-      return read();
-    }
-    else{
-      return -1;
-    }
-  }
-  else{
-    return -1;
-  }
+  return readFeedback(0x4E, folderNumber);
 }
 
 int DFRobotDFPlayerMini::readFolderCounts(){
-  sendStack(0x4F);
-  if (waitAvailable()) {
-    if (readType() == DFPlayerFeedBack) {
-      return read();
-    }
-    else{
-      return -1;
-    }
-  }
-  else{
-    return -1;
-  }
+  return readFeedback(0x4F, 0);
 }
 
 int DFRobotDFPlayerMini::readFileCounts(){
