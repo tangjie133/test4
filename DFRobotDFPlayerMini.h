@@ -94,6 +94,7 @@ class DFRobotDFPlayerMini {
 
   void parseStack();
   bool validateStack();
+  int readFeedback(uint8_t command, uint16_t argument);
   
   uint8_t device = DFPLAYER_DEVICE_SD;
   
