@@ -293,10 +293,16 @@ int DFRobotDFPlayerMini::readFeedback(uint8_t command, uint16_t argument){
   sendStack(command, argument);
   while (waitAvailable()) {
     if (readType() == DFPlayerFeedBack) {
-      return read();
+      // Only accept a feedback whose command matches the one we sent, so a
+      // stale/unsolicited feedback (e.g. the current file number) is not
+      // returned for the wrong query.
+      if (readCommand() == command) {
+        return read();
+      }
     }
-    // A non-feedback message (e.g. a leftover DFPlayerPlayFinished) was
-    // received; discard it and keep waiting for the real feedback.
+    // A non-matching message (e.g. a leftover DFPlayerPlayFinished or a
+    // feedback for a different command) was received; discard it and keep
+    // waiting for the real feedback.
   }
   return -1;
 }
