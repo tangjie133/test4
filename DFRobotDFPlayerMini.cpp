@@ -478,7 +478,13 @@ int DFRobotDFPlayerMini::readFileCountsInFolder(int folderNumber){
 }
 
 int DFRobotDFPlayerMini::readFolderCounts(){
-  return readFeedback(0x4F, 0);
+  int counts = readFeedback(0x4F, 0);
+  // The DFPlayer Mini reports the number of folders including the root
+  // directory, so subtract one to get the actual number of user folders.
+  if (counts <= 0) {
+    return counts;
+  }
+  return counts - 1;
 }
 
 int DFRobotDFPlayerMini::readFileCounts(){
