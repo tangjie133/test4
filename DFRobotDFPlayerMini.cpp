@@ -293,6 +293,16 @@ bool DFRobotDFPlayerMini::available(){
 }
 
 int DFRobotDFPlayerMini::readFeedback(uint8_t command, uint16_t argument){
+  // Clear any leftover data in the receive buffer before sending a
+  // command that expects a response. Some modules (e.g. the
+  // AA20HFJ648) confirm every command, so a stale confirmation from a
+  // previous command (e.g. volume/EQ) can otherwise be misread as the
+  // response to this one and reported as -1.
+  while (_serial->available()) {
+    _serial->read();
+  }
+  _receivedIndex = 0;
+  _isAvailable = false;
   sendStack(command, argument);
   while (waitAvailable()) {
     if (readType() == DFPlayerFeedBack) {
