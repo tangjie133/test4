@@ -32,9 +32,13 @@ uint16_t DFRobotDFPlayerMini::calculateCheckSum(uint8_t *buffer){
 
 void DFRobotDFPlayerMini::sendStack(){
   if (_sending[Stack_ACK]) {  //if the ack mode is on wait until the last transmition
-    while (_isSending) {
-      delay(0);
+    unsigned long timeout = millis() + 1000; // wait no more than 1000 ms
+    while (_isSending && millis() < timeout) {
+      delay(1);
       waitAvailable();
+    }
+    if (_isSending) {
+      handleError(TimeOut);
     }
   }
 
@@ -90,7 +94,7 @@ bool DFRobotDFPlayerMini::waitAvailable(unsigned long duration){
     if (millis() - timer > duration) {
       return handleError(TimeOut);
     }
-    delay(0);
+    delay(1);
   }
   return true;
 }
@@ -227,7 +231,7 @@ bool DFRobotDFPlayerMini::validateStack(){
 
 bool DFRobotDFPlayerMini::available(){
   while (_serial->available()) {
-    delay(0);
+    delay(1);
     if (_receivedIndex == 0) {
       _received[Stack_Header] = _serial->read();
 #ifdef _DEBUG
